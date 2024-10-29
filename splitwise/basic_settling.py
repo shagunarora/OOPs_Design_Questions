@@ -20,7 +20,6 @@ Solution discussion:
 class Splitwise:
     def __init__(self):
         self.net_amt_per_user = {}
-        self.transactions_history = []
         self.transactions = []
         self.settlements = []
     
@@ -32,7 +31,7 @@ class Splitwise:
         self.net_amt_per_user[from_user] = self.net_amt_per_user.get(from_user, 0) - amt
         self.net_amt_per_user[to_user] = self.net_amt_per_user.get(to_user, 0) + amt
 
-    def get_settlements(self):
+    def simplify_settlements(self):
         # Store all the debtors and creditors in 2 different list.
         debtors  =[]
         creditors = []
@@ -64,15 +63,6 @@ class Splitwise:
 
         return self.settlements
 
-    def clear_settlements(self):
-        """
-        Clear settlements and reset all net balances after settlements.
-        """
-        self.transactions_history.extend(self.transactions)
-        self.transactions.clear()
-        self.net_amt_per_user.clear()
-        self.settlements.clear()
-
 # Test
 splitwise = Splitwise()
 splitwise.create_transaction("A", "B", 400)
@@ -80,4 +70,17 @@ splitwise.create_transaction("A", "C", 400)
 splitwise.create_transaction("C", "B", 200)
 splitwise.create_transaction("C", "D", 100)
 
-print(splitwise.get_settlements())
+print(splitwise.simplify_settlements())
+
+"""
+A -> B = 400
+A -> C = 400
+C -> B = 200
+C -> D = 100
+
+
+A = -800
+C = 100
+B = 600
+D = 100
+"""
